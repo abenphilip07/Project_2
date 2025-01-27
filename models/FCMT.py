@@ -24,6 +24,9 @@ class FCMT(nn.Module):
         # Linear projection to match d_model dimension
         self.input_projection = nn.Linear(input_dim, d_model)
 
+        # Projection to return to input_dim (1000) after transformer processing
+        self.output_projection = nn.Linear(d_model, input_dim)
+
     def forward(self, x):
         # Input x: [batch_size, sequence_length, input_dim]
         x = self.input_projection(x)  # Project input to d_model dimension
@@ -38,7 +41,11 @@ class FCMT(nn.Module):
         y_L = self.layer_norm(transformed_x)
         z = y_L + transformed_x  # Lambda = 1
 
-        return z
+        # Project back to input_dim (1000)
+        z_projected = self.output_projection(z)
+
+        return z_projected
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=5000):

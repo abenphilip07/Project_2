@@ -13,7 +13,7 @@ with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 # Load metadata
-metadata_path = "E:\\Project_2\\metadata\\resnet_metadata1.json"
+metadata_path = r'E:\Project_2\metadata\audio_chunks_metadata.json'
 with open(metadata_path, "r") as f:
     metadata = json.load(f)
 
@@ -32,7 +32,7 @@ model = FCMT(
 model.eval()  # Set model to evaluation mode
 
 # Directory to store transformed features
-output_dir = "E:\\Project_2\\transformed_features1"
+output_dir = "E:\\Project_2\\data\\audio features\\transformed_audiofeatures"
 os.makedirs(output_dir, exist_ok=True)
 
 # New metadata dictionary
@@ -47,7 +47,7 @@ for video_id, video_data in metadata.items():
 
     for chunk in video_data["chunks"]:
         # Load chunk features
-        features = np.load(chunk["feature_path"])
+        features = np.load(chunk["features_path"])
         feature_tensor = torch.tensor(features, dtype=torch.float32).unsqueeze(0).to(device)
 
         # Get transformed feature sequence
@@ -63,14 +63,14 @@ for video_id, video_data in metadata.items():
             "chunk_index": chunk["chunk_index"],
             "audio_path": chunk["audio_path"],
             "video_path": chunk["video_path"],
-            "original_feature_path": chunk["feature_path"],
-            "transformed_feature_path": transformed_feature_path
+            "original_feature_path": chunk["features_path"],
+            "transformed_audio_feature_path": transformed_feature_path
         })
 
         print(f"Processed chunk {chunk['chunk_index']} for video: {video_id}")
 
 # Save updated metadata with transformed feature paths
-new_metadata_path = "E:\\Project_2\\metadata\\transformed_metadata1.json"
+new_metadata_path = "E:\\Project_2\\metadata\\transformed_audiometadata.json"
 with open(new_metadata_path, "w") as f:
     json.dump(new_metadata, f, indent=4)
 
